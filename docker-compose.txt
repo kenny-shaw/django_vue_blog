@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  backend:
+    restart: always
+    build: ./backend
+    command: bash -c "python3 manage.py collectstatic --no-input && python3 manage.py migrate && python3 manage.py rebuild_index --noinput && gunicorn --timeout=30 --workers=4 --bind :8000 backend.wsgi:application"
+    #command: bash -c "python3 manage.py collectstatic --no-input && python3 manage.py migrate && python3 manage.py rebuild_index --noinput && python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/code/backend
+      - static-volume:/code/backend/collected_static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - backend_network
+      - db_network
+      #- es_network
+  db:
+    image: mysql:5.7
+    volumes:
+      - "./mysql:/var/lib/mysql"
+    command: [ #使用 command 可以覆盖容器启动后默认执行的命令
+      '--character-set-server=utf8mb4', #设置数据库表的数据集
+      '--collation-server=utf8mb4_unicode_ci', #设置数据库表的数据集
+    ]
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=xiaokuN521
+      - MYSQL_DATABASE=kennyeow_db
+    networks:
+      - db_network
+  nginx:
+    restart: always
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "8080:8000"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./frontend:/code/frontend
+      - static-volume:/code/backend/collected_static
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+  #elasticsearch:
+   # restart: always
+    #build: ./elasticsearch
+    #ports:
+     # - "9200:9200"
+      #- "9300:9300"
+    #volumes:
+     # - ./elasticsearch/data:/usr/share/elasticsearch/data
+      #- ./elasticsearch/config:/usr/share/elasticsearch/config
+      #- ./elasticsearch/logs:/usr/share/elasticsearch/logs
+    #networks:
+     # - es_network
+networks:
+  backend_network:
+    driver: bridge
+  db_network:
+    driver: bridge
+  #es_network:
+   # driver: bridge
+volumes:
+  static-volume:

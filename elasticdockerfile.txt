@@ -1,0 +1,41 @@
+# Docker image of elasticsearch with ik tokenizer
+# VERSION 2.4.6
+# Author: KennyShaw
+ 
+#基础镜像使用elasticsearch:2.4.6
+FROM elasticsearch:2.4.6
+ 
+#作者
+MAINTAINER KennyShaw <kennyshaw@foxmail.com>
+ 
+#RUN chmod -R 777 /opt
+#RUN chown -R elasticsearch /opt
+
+
+#es插件目录
+ENV ES_PLUGINS_PATH /usr/share/elasticsearch/plugins
+
+#定义存放ik分词器文件的目录
+#ENV ik_SRC_COMPILE_PATH /opt/ik_build
+ 
+#创建存放ik分词器文件的目录
+#RUN mkdir $ik_SRC_COMPILE_PATH 
+
+#进入编译ik分词器文件的目录
+#RUN cd $ik_SRC_COMPILE_PATH 
+
+#下载ik包
+RUN wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v1.10.6/elasticsearch-analysis-ik-1.10.6.zip
+
+#解压zip包
+RUN unzip elasticsearch-analysis-ik-1.10.6 -d  ik
+
+#构建成功后，将文件移动到插件目录
+RUN mv ik $ES_PLUGINS_PATH/
+
+RUN rm -rf elasticsearch-analysis-ik-1.10.6.zip
+#普通用户
+#USER elasticsearch
+
+#设置工作目录
+#WORKDIR /usr/share/elasticsearch/bin

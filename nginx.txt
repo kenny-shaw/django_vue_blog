@@ -1,0 +1,24 @@
+upstream www.kennyeow.com{
+  ip_hash;
+  server backend:8000;
+}
+
+server {
+  listen 80;
+  server_name frontend;
+  location / {
+    root /code/frontend;  #(vue 项目路径)
+    index index.html;
+  }
+}
+server {
+  listen 8000;
+  server_name backend;
+  location /static/ {
+    autoindex on;
+    alias /code/backend/collected_static/;
+  }
+  location / {  
+    proxy_pass http://www.kennyeow.com/;
+  }
+}
