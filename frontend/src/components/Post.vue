@@ -531,6 +531,9 @@ export default {
     async LikeOrCancelLikeArticle() {
       // 获取当前token
       const token = this.$store.state.token
+      if (!token) {
+        return this.$message.warning('请登录后进行点赞~')
+      }
       // 要请求的后端URL
       const backendUrl = `likearticle/${this.id}?token=${token}`
       // 如果未点赞，则进行点赞，
@@ -689,10 +692,13 @@ export default {
         this.$message.error(res.error)
       }
     },
-    // 点赞文章、取消点赞
+    // 点赞评论、取消点赞
     async likeOrCancelLikeComment(commentId) {
       // 获取当前token
       const token = this.$store.state.token
+      if (!token) {
+        return this.$message.warning('请登录后进行点赞~')
+      }
       const commentBackendUrl = `comments/${commentId}?token=${token}`
       const backendUrl = `likecomment/${commentId}?token=${token}`
       // 获取当前评论
@@ -808,9 +814,12 @@ export default {
     // 新建收藏夹
     async createNewFavorite() {
       if (this.newFavoriteTitle === '') {
-        return this.$message.error('请输入收件夹名称~')
+        return this.$message.error('请输入收藏夹名称~')
       }
       const token = this.$store.state.token
+      if (!token) {
+        return this.$message.warning('请登录后进行新建收藏夹~')
+      }
       const backendUrl = `favorite/?token=${token}`
       const { data: res } = await this.$axios.post(backendUrl, {
         title: this.newFavoriteTitle

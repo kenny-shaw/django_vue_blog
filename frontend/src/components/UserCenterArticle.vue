@@ -240,6 +240,9 @@ export default {
       )
       // 获取当前token
       const token = this.$store.state.token
+      if (!token) {
+        return this.$message.warning('请登录后进行点赞~')
+      }
       // 要请求的后端URL
       const backendUrl = `likearticle/${articleId}?token=${token}`
       // 如果未点赞，则进行点赞，

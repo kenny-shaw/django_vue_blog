@@ -17,7 +17,7 @@
             <h1 class="username">{{ user.username }}</h1>
             <a
               class="user-edit hidden-xxs-up"
-              v-if="this.$store.state.username === user.username"
+              v-if="this.$store.state.userid === user.id"
               @click.prevent="toUserSetting"
               >编辑</a
             >
@@ -38,7 +38,7 @@
         </div>
         <div
           class="user-action-box hidden-xxs-only"
-          v-if="this.$store.state.username === user.username"
+          v-if="this.$store.state.userid === user.id"
         >
           <el-button type="primary" plain @click="toUserSetting"
             >编辑个人资料</el-button
